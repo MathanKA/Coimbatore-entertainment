@@ -33,10 +33,11 @@
       #map {
         bottom:0px;
         height: 100%;
-        left: 362px;
+        right: 362px;
         position: absolute;
-        right: 0px;
+        left: 0px;
       }
+
       .options-box {
         background: #fff;
         border: 1px solid #999;
@@ -46,11 +47,13 @@
         padding: 10px 10px 30px 10px;
         text-align: left;
         width: 340px;
+        float: right;
       }
     </style>
   </head>
   <body>
     <div class="container">
+      <div id="map"></div>
       <div class="options-box">
         <h1>Coimbatore Entertainment Places</h1>
         <div>
@@ -58,7 +61,6 @@
           <input id="hide-listings" type="button" value="Hide Listings">
         </div>
       </div>
-      <div id="map"></div>
     </div>
     <script>
       var map;
