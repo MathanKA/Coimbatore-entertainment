@@ -6,14 +6,10 @@ body {
   padding: 0;
 }
 
-.container {
-  height: 100%;
-  position: relative;
-}
-
 input {
   font-size: 12px;
 }
+
 h1 {
   color: #525454;
   font-size: 22px;
