@@ -8,214 +8,157 @@
 		<!-- Bootstrap css -->
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
 		<link rel="stylesheet" href="css/main.css">
         
 	</head>
 	<body>
-
+        <div id="map"></div>
 		<div class="container-fluid">
-            <div id="map"></div>
+            <div class="row">
+                <div class="options-box">
+                    <h1>Coimbatore Entertainment Places</h1>
+                    <div>
+                        <input id="show-listings" type="button" value="Show Listings">
+                        <input id="hide-listings" type="button" value="Hide Listings">
+                    </div>
+                </div>  
+            </div>
 
-			<div class="options-box">
-				<h1>Coimbatore Entertainment Places</h1>
-				<div>
-					<input id="show-listings" type="button" value="Show Listings">
-					<input id="hide-listings" type="button" value="Hide Listings">
-				</div>
-			</div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="neighborhood-selector">
+                        <input type="text" class="form-control" id="neighborhood" data-bind="attr: { placeholder: 'Neighborhood: ' + neighborhood.name() }, value: switchInputValue">
+                    </div>
+                </div>
+                <div class="col-md-offset-5 col-md-4">
+                    <div class="sidebar">
+                        <a class="hide-list-view">
+                            <div class="sidebar-title">
+                                <h2>Places</h2>
+                            </div>
+                        </a>
+                        <div class="filter-box">
+                            <input class="form-control input-lg" type="text" placeholder="Search (e.g fast-food, ... or type a place name)" data-bind="textInput: searchInputValue">
+                        </div>
+                        <div id="list-view" class="list-view">
+                            <ul class="categories" data-bind="foreach: categories">
+                                <li class="category" data-bind="visible: placesMatchingQuery().length > 0">
+                                    <a data-toggle="collapse" data-bind="attr: { href: '#' + id, 'aria-controls': id }" data-parent="#list-view" aria-expanded="true">
+                                        <div class="category-header" data-bind="style: { backgroundColor: colors[id] }">
+                                            <!--<span class="category-icon">
+                                                <img data-bind="attr: { src: headerIcon, alt: name }">
+                                            </span>-->
+                                            <div class="category-title" data-toggle="tooltip" data-placement="bottom" data-bind="attr: { title: pluralName }">
+                                                <h4 data-bind="text: displayName"></h4>
+                                            </div>
+                                            <!--<div class="toggle-visibility">
+                                                <span class="glyphicon glyphicon-eye-open" data-bind="visible: isVisible, click: toggleVisibility" aria-hidden="true"></span>
+                                                <span class="glyphicon glyphicon-eye-close" data-bind="visible: isHidden, click: toggleVisibility" aria-hidden="true"></span>
+                                            </div>-->
+                                        </div>
+                                    </a>
+                                    <ul style="display: none" class="places collapse in" data-bind="attr: { id: id }, visible: isVisible, foreach: places">
+                                        <li class="place" data-bind="attr: { id: id }, css: { activated: infoWindowOpened }, visible: matchesQuery">
+                                            <div class="row" data-bind="click: toggleInfoWindow">
+                                                <div class="col-xs-3">
+                                                    <!--<img class="img-responsive place-thumbnail" data-bind="visible: photos.length > 0, attr: { src: thumbnail }" alt="thumbnail">
+                                                    <img class="img-responsive place-thumbnail" data-bind="visible: photos.length <= 0, attr: { src: 'http://placehold.it/100/3f51b5/ffffff&text=' + name.charAt(0).toUpperCase() }" alt="thumbnail">-->
+                                                </div>
+                                                <div class="col-xs-9">
+                                                    <h4 data-bind="text: name"></h4>
+                                                    <h5 data-bind="text: formattedCategories"></h5>
+                                                    <address data-bind="visible: location.formattedAddress.length > 0, foreach: location.formattedAddress">
+                                                        <span data-bind="text: $data"></span><br>
+                                                    </address>
+                                                    <!--<div class="place-more" data-bind="visible: infoWindowOpened">
+                                                        <a href="#" data-bind="visible: photos.length > 0, click: function () { $('#photos-' + id).modal('show'); }, clickBubble: false">Photos</a>
+                                                    </div>-->
+                                                </div>
+                                            </div>
+                                            <!--<div class="modal fade" data-bind="attr: { id: 'photos-' + id, 'aria-labelledby': 'modal-' + id }" tabindex="-1" role="dialog" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                            <h4 class="modal-title" data-bind="text: name, attr: { id: 'modal-' + id }"></h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div data-bind="attr: { id: 'slide-' + id }" class="carousel slide" data-ride="carousel">
+                                                                <ol class="carousel-indicators" data-bind="foreach: photos">
+                                                                    <li data-bind="css: { 'active': position == 0 }, attr: { 'data-target': '#slide-' + placeId, 'data-slide-to': $index }"></li>
+                                                                </ol>
+                                                                <div class="carousel-inner" role="listbox" data-bind="foreach: photos">
+                                                                    <div class="item" data-bind="css: { 'active': position == 0 }">
+                                                                        <img class="img-responsive" data-bind="attr: { src: preview }" alt="Preview">
+                                                                    </div>
+                                                                </div>
+                                                                <a class="left carousel-control" data-bind="attr: { href: '#slide-' + id }" role="button" data-slide="prev">
+                                                                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                                                    <span class="sr-only">Previous</span>
+                                                                </a>
+                                                                <a class="right carousel-control" data-bind="attr: { href: '#slide-' + id }" role="button" data-slide="next">
+                                                                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                                                    <span class="sr-only">Previous</span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>-->
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="collapse-list-view">
+                            <span id="collapse-list-view-button" class="glyphicon glyphicon-chevron-up"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 		</div>
-
-        <script type="text/javascript">
-            var map;
-
-            // Create a new blank array for all the listing markers.
-            var markers = [];
-
-            function initMap() {
-
-                                // Create a styles array to use with the map.
-                var styles = [
-                    {
-                        featureType: 'water',
-                        stylers: [
-                            { color: '#19a0d8' }
-                        ]
-                    },{
-                        featureType: 'administrative',
-                        elementType: 'labels.text.stroke',
-                        stylers: [
-                            { color: '#ffffff' },
-                            { weight: 6 }
-                        ]
-                    },{
-                        featureType: 'administrative',
-                        elementType: 'labels.text.fill',
-                        stylers: [
-                            { color: '#e85113' }
-                        ]
-                    },{
-                        featureType: 'road.highway',
-                        elementType: 'geometry.stroke',
-                        stylers: [
-                            { color: '#efe9e4' },
-                            { lightness: 100 }
-                        ]
-                    },{
-                        featureType: 'transit.station',
-                        stylers: [
-                            { weight: 9 },
-                            { hue: '#e85113' }
-                        ]
-                    },{
-                        featureType: 'road.highway',
-                        elementType: 'labels.icon',
-                        stylers: [
-                            { visibility: 'off' }
-                        ]
-                    },{
-                        featureType: 'water',
-                        elementType: 'labels.text.stroke',
-                        stylers: [
-                            { lightness: 100 }
-                        ]
-                    },{
-                        featureType: 'water',
-                        elementType: 'labels.text.fill',
-                        stylers: [
-                            { lightness: -100 }
-                        ]
-                    },{
-                        featureType: 'poi',
-                        elementType: 'geometry',
-                        stylers: [
-                            { visibility: 'on' },
-                            { color: '#f0e4d3' }
-                        ]
-                    },{
-                        featureType: 'road.highway',
-                        elementType: 'geometry.fill',
-                        stylers: [
-                            { color: '#efe9e4' },
-                            { lightness: -25 }
-                        ]
-                    }
-                ];
-                // Constructor creates a new map - only center and zoom are required.
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: {lat: 11.017944, lng: 76.961055},
-                    zoom: 13,
-                    styles: styles,
-                    mapTypeControl: false
-                });
-
-                // These are the real estate listings that will be shown to the user.
-                // Normally we'd have these in a database instead.
-                var locations = [
-                    {title: 'VOC', site: 'www.voc.com', location: {lat: 11.006829, lng: 76.971147}},
-                    {title: 'Indira Gandhi', site: 'ind.com', location: {lat: 10.420428, lng: 77.115441}},
-                    {title: 'Niligris', site: 'nil.com', location: {lat: 11.098200, lng: 76.749450}}
-                    ];
-
-
-                var largeInfowindow = new google.maps.InfoWindow();
-
-                var defaultIcon = makeMarkerIcon('0091ff');
-
-                // Create a "highlighted location" marker color for when the user
-                // mouses over the marker.
-                var highlightedIcon = makeMarkerIcon('FFFF24');
-
-                // The following group uses the location array to create an array of markers on initialize.
-                for (var i = 0; i < locations.length; i++) {
-                    // Get the position from the location array.
-                    var position = locations[i].location;
-                    var title = locations[i].title;
-                    var site = locations[i].site;
-                    // Create a marker per location, and put into markers array.
-                    var marker = new google.maps.Marker({
-                        position: position,
-                        title: title,
-                        site: site,
-                        animation: google.maps.Animation.DROP,
-                        icon: defaultIcon,
-                        id: i
-                    });
-                    // Push the marker to our array of markers.
-                    markers.push(marker);
-                    // Create an onclick event to open an infowindow at each marker.
-                    marker.addListener('click', function() {
-                        populateInfoWindow(this, largeInfowindow);
-                    });
-
-                    marker.addListener('mouseover', function() {
-                        this.setIcon(highlightedIcon);
-                    });
-                    marker.addListener('mouseout', function() {
-                        this.setIcon(defaultIcon);
-                    });
-                }
-                document.getElementById('show-listings').addEventListener('click', showListings);
-                document.getElementById('hide-listings').addEventListener('click', hideListings);
-                // Extend the boundaries of the map for each marker
-            }
-            // This function populates the infowindow when the marker is clicked. We'll only allow
-            // one infowindow which will open at the marker that is clicked, and populate based
-            // on that markers position.
-            function populateInfoWindow(marker, infowindow) {
-                // Check to make sure the infowindow is not already opened on this marker.
-                if (infowindow.marker != marker) {
-                    infowindow.marker = marker;
-                    infowindow.setContent('<div>' + marker.title + '<br>' + marker.site + '</div>');
-                    infowindow.open(map, marker);
-                    // Make sure the marker property is cleared if the infowindow is closed.
-                    infowindow.addListener('closeclick',function(){
-                        infowindow.setMarker(null);
-                    });
-                }
-            }
-            // This function will loop through the markers array and display them all.
-            function showListings() {
-                var bounds = new google.maps.LatLngBounds();
-                // Extend the boundaries of the map for each marker and display the marker
-                for (var i = 0; i < markers.length; i++) {
-                    markers[i].setMap(map);
-                    bounds.extend(markers[i].position);
-                }
-                map.fitBounds(bounds);
-            }
-
-            // This function will loop through the listings and hide them all.
-            function hideListings() {
-                for (var i = 0; i < markers.length; i++) {
-                    markers[i].setMap(null);
-                }
-            }
-            // This function takes in a COLOR, and then creates a new marker
-            // icon of that color. The icon will be 21 px wide by 34 high, have an origin
-            // of 0, 0 and be anchored at 10, 34)
-
-            function makeMarkerIcon(markerColor) {
-                var markerImage = new google.maps.MarkerImage(
-                    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-                    '|40|_|%E2%80%A2',
-                    new google.maps.Size(21, 34),
-                    new google.maps.Point(0, 0),
-                    new google.maps.Point(10, 34),
-                    new google.maps.Size(21,34));
-                return markerImage;
-            }
-        </script>
-
-<!-- Local JS files -->
-        <script type="text/javascript" src="js/main.js"></script>
-
+		<!--<script src="lib/modernizr/modernizr.js"></script>-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.5/js/bootstrap.min.js"></script>
 		<script async defer
 				src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPRKzksdR2_1Aidnsj8oAk5YIh7xEX0h0&v=3&callback=initMap">
-		</script>
-		<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>-->
-				<!-- Latest compiled and minified JavaScript -->
-		<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script> -->
+		</script>   
+        <script src="js/values.js"></script>
+        <script src="js/apis.js"></script>
+        <script src="js/app.js"></script>				
+		<script>
+            // Toggle the visibility of the list view.
+            var listView = $('.list-view');
+            var listViewVisible = true;
+            var collapse = $('#collapse-list-view');
 
+            collapse.click(function () {
+                listViewVisible = !listViewVisible;
+                // $('.list-view').css('display', listViewVisible ? 'block' : 'none');
+
+                var button = $('#collapse-list-view-button');
+
+                if (listViewVisible) {
+                    listView.slideDown();
+
+                    button.removeClass('glyphicon-chevron-down');
+                    button.addClass('glyphicon-chevron-up');
+
+                    collapse.attr('title', 'Hide the list view.');
+                } else {
+                    listView.slideUp();
+
+                    button.removeClass('glyphicon-chevron-up');
+                    button.addClass('glyphicon-chevron-down');
+
+                    collapse.attr('title', 'Show the list view.');
+                }
+            });
+        </script>
 	</body>
 </html>
